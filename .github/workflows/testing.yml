@@ -45,7 +45,7 @@ jobs:
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json see all version
         python-version: ['3.10.2']
-        poetry-version: [ '1.1.12' ]
+        poetry-version: ['1.1.12']
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
@@ -72,92 +72,71 @@ jobs:
         run: |
           poetry run mypy .
 
-#  test:
-#    name: "Testing code"
-#    runs-on: ubuntu-latest
-#    needs: [flake8, mypy]
-#    timeout-minutes: 5
-#    env:
-#      jwt_secret_key: ${{ secrets.JWT_SECRET_KEY }}
-#      salt_password: ${{ secrets.SALT_PASSWORD }}
-#      db_host: localhost
-#      db_port: 5432
-#      db_user: ${{ secrets.DB_USER }}
-#      db_password: ${{ secrets.DB_PASSWORD }}
-#      db_database: ${{ secrets.DB_DATABASE }}
-#      recaptcha_secret_key: ${{ secrets.RECAPTCHA_SECRET_KEY }}
-#      rmq_dsn: ${{ secrets.RMQ_DSN }}
-#      debug: True
-#    services:
-#      postgres:
-#        image: postgres
-#        env:
-#          POSTGRES_USER: ${{ env.db_user }}
-#          POSTGRES_PASSWORD: ${{ env.db_password }}
-#          POSTGRES_DB: ${{ env.db_database }}
-#          POSTGRES_HOST: ${{ env.db_host }}
-#          POSTGRES_PORT: ${{ env.db_port }}
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#        ports:
-#          - 5432:5432
-#      redis:
-#        # Docker Hub image
-#        image: redis
-#        # Set health checks to wait until redis has started
-#        options: >-
-#          --health-cmd "redis-cli ping"
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#        ports:
-#          # Maps port 6379 on service container to the host
-#          - 6379:6379
-#      rabbitmq:
-#          image: rabbitmq:latest
-#          ports:
-#            - 5672:5672
-#          options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
-#    strategy:
-#      matrix:
-#        # https://github.com/actions/python-versions/blob/main/versions-manifest.json see all version
-#        python-version: ['3.10.1']
-#        os: [ubuntu-latest]
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Set up Python ${{ matrix.python-version }}
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#
-#      - uses: actions/cache@v2
-#        if: startsWith(runner.os, 'Linux')
-#        with:
-#          path: ~/.cache/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-
-#      - uses: actions/cache@v2
-#        if: startsWith(runner.os, 'macOS')
-#        with:
-#          path: ~/Library/Caches/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#      - name: Setup custom host for redis
-#        run: echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-#
-#      - name: Testing code
-#        working-directory: tests
-#        run: |
-#          pytest --cov=../iperon/ --cov-report=xml
+  test:
+    name: "Testing code"
+    runs-on: ubuntu-latest
+    needs: [flake8, mypy]
+    timeout-minutes: 5
+    env:
+      db_host: localhost
+      db_port: 5432
+      db_user: 'evopayment_user'
+      db_password: 'evopayment_password'
+      db_database: 'evopayment_database'
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: ${{ env.db_user }}
+          POSTGRES_PASSWORD: ${{ env.db_password }}
+          POSTGRES_DB: ${{ env.db_database }}
+          POSTGRES_HOST: ${{ env.db_host }}
+          POSTGRES_PORT: ${{ env.db_port }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+    strategy:
+      matrix:
+        # https://github.com/actions/python-versions/blob/main/versions-manifest.json see all version
+        python-version: ['3.10.2']
+        poetry-version: ['1.1.12']
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+
+      - name: Poetry install
+        run: poetry install
+
+      - name: Testing code
+        working-directory: tests
+        run: |
+          poetry pytest .
+
 #      - name: "Upload coverage to Codecov"
 #        uses: codecov/codecov-action@v2.1.0
 #        with:
