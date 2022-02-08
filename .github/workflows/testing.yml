@@ -35,7 +35,7 @@ jobs:
 
       - name: Linter with flake8
         run: |
-          flake8 .
+          poetry env info
 
 #      - uses: actions/cache@v2
 #        if: startsWith(runner.os, 'Linux')
