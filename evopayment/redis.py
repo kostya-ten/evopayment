@@ -16,7 +16,7 @@ class RedisClient:
 
     @classmethod
     async def init(cls):
-        if settings.redis_password.get_secret_value():  # pragma: no cover
+        if settings.redis_password:  # pragma: no cover
             cls.redis = aioredis.Redis(
                 connection_pool=aioredis.ConnectionPool.from_url(
                     url=settings.redis_dsn,
