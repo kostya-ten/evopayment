@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.idea/
+http.http
+docs/make.bat
+docs/Makefile
+docker-compose.yml
