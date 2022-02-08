@@ -6,14 +6,14 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from tortoise import Tortoise
 
-from . import ___version___, logger, handlers, redis
+from . import __version__, logger, handlers, redis
 from .exceptions import exception_handlers
 from .settings import settings, ORM_CONFIG
 
 
 app = FastAPI(
     title='Evopayment',
-    version=___version___,
+    version=__version__,
     default_response_class=ORJSONResponse,
     docs_url='/api/',
     redoc_url=None,

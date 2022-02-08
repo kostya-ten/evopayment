@@ -37,71 +37,41 @@ jobs:
         run: |
           poetry run flake8 .
 
-#      - uses: actions/cache@v2
-#        if: startsWith(runner.os, 'Linux')
-#        with:
-#          path: ~/.cache/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-
-#      - uses: actions/cache@v2
-#        if: startsWith(runner.os, 'macOS')
-#        with:
-#          path: ~/Library/Caches/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#      - name: Linter with flake8
-#        run: |
-#          flake8 .
+  mypy:
+    name: "Linter with mypy"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        # https://github.com/actions/python-versions/blob/main/versions-manifest.json see all version
+        python-version: ['3.10.2']
+        poetry-version: [ '1.1.12' ]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
 
-#  mypy:
-#    name: "Linter with mypy"
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 5
-#    strategy:
-#      matrix:
-#        # https://github.com/actions/python-versions/blob/main/versions-manifest.json see all version
-#        python-version: ['3.10.1']
-#        os: [ubuntu-latest]
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: Set up Python ${{ matrix.python-version }}
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#
-#      - name: Set up Python ${{ matrix.python-version }}
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#
-#      - uses: actions/cache@v2
-#        if: startsWith(runner.os, 'Linux')
-#        with:
-#          path: ~/.cache/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-
-#      - uses: actions/cache@v2
-#        if: startsWith(runner.os, 'macOS')
-#        with:
-#          path: ~/Library/Caches/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#      - name: Linter with mypy
-#        run: |
-#          mypy .
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+
+      - name: Poetry install
+        run: poetry install
+
+      - name: Linter with mypy
+        run: |
+          poetry run mypy .
+
 #  test:
 #    name: "Testing code"
 #    runs-on: ubuntu-latest
