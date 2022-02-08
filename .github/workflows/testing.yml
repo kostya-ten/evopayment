@@ -118,6 +118,9 @@ jobs:
         poetry-version: ['1.1.12']
         os: [ubuntu-latest]
     steps:
+      - name: Setup custom host for redis
+        run: echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2

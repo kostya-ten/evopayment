@@ -22,7 +22,7 @@ class RedisClient:
                 encoding='utf-8',
                 decode_responses=True,
                 max_connections=10,
-                # password=settings.redis_password.get_secret_value()
+                password=settings.redis_password.get_secret_value()
             )
         )
         cls._inited = True
