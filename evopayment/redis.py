@@ -16,15 +16,26 @@ class RedisClient:
 
     @classmethod
     async def init(cls):
-        cls.redis = aioredis.Redis(
-            connection_pool=aioredis.ConnectionPool.from_url(
-                url=settings.redis_dsn,
-                encoding='utf-8',
-                decode_responses=True,
-                max_connections=10,
-                # password=settings.redis_password.get_secret_value()
+        if settings.redis_password.get_secret_value():  # pragma: no cover
+            cls.redis = aioredis.Redis(
+                connection_pool=aioredis.ConnectionPool.from_url(
+                    url=settings.redis_dsn,
+                    encoding='utf-8',
+                    decode_responses=True,
+                    max_connections=10,
+                    password=settings.redis_password.get_secret_value(),
+                )
             )
-        )
+        else:
+            cls.redis = aioredis.Redis(
+                connection_pool=aioredis.ConnectionPool.from_url(
+                    url=settings.redis_dsn,
+                    encoding='utf-8',
+                    decode_responses=True,
+                    max_connections=10,
+                )
+            )
+
         cls._inited = True
 
     async def __aenter__(self) -> Redis:
