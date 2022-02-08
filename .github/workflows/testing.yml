@@ -15,7 +15,7 @@ jobs:
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json see all version
         python-version: ['3.10.2']
-        poetry-version: [ '1.1.12' ]
+        poetry-version: ['1.1.12']
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
@@ -32,6 +32,10 @@ jobs:
 
       - name: Poetry
         run: poetry install
+
+      - name: Linter with flake8
+        run: |
+          flake8 .
 
 #      - uses: actions/cache@v2
 #        if: startsWith(runner.os, 'Linux')

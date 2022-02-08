@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 120
+accept-encodings = utf-8,utf-16
+min_python_version = 3.10
+max-parameters-amount = 8
+per-file-ignores = __init__.py:F401
+exclude =
+    venv
