@@ -16,7 +16,7 @@ class LogLevel(str, Enum):
 class Settings(BaseSettings):
     """ Configuration class """
 
-    base_dir: DirectoryPath = Field(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    base_dir: DirectoryPath = Field(os.path.dirname(os.path.dirname(__file__)))
     debug: bool = False
     project_host: AnyUrl = Field('https://evopayment.ru')
     log_level: LogLevel = Field('INFO')
